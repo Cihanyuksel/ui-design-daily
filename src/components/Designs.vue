@@ -13,36 +13,87 @@
       <button class="filter-btn">Coded</button>
     </div>
     <div class="software-list">
-      <button class="software-item active">All</button>
-      <button class="software-item figma">
+      <button @click="filter = ''" class="software-list--item active">
+        All
+      </button>
+      <button @click="filter = 'figma'" class="software-list--item">
         <img src="../assets/filter-logo/figma.png" />
       </button>
-      <button class="software-item sketch">
+      <button @click="filter = 'sketch'" class="software-list--item">
         <img src="../assets/filter-logo/sketch.png" />
       </button>
-      <button class="software-item studio">
+      <button @click="filter = 'studio'" class="software-list--item">
         <img src="../assets/filter-logo/studio.png" />
       </button>
-      <button class="software-item xd">
+      <button @click="filter = 'adobexd'" class="software-list--item">
         <img src="../assets/filter-logo/adobeXd.png" />
       </button>
-      <button class="software-item photoshop">
+      <button @click="filter = 'photoshop'" class="software-list--item">
         <img src="../assets/filter-logo/adobePs.png" />
       </button>
     </div>
   </div>
+  <DesignList
+    :getImagesLogo="getImagesLogo"
+    :getImagesDesing="getImagesDesing"
+    :filtered="filtered"
+    :searchText="searchText"
+  />
 </template>
+
+<script>
+import DesignList from "./DesignList.vue";
+import designData from "../store/data";
+
+export default {
+  props: ["searchText"],
+
+  components: {
+    DesignList,
+  },
+
+  data() {
+    return {
+      designData,
+      filter: "",
+      active: false,
+    };
+  },
+
+  methods: {
+    getImagesDesing(name) {
+      return require(`../assets/design-img/${name}.png`);
+    },
+    getImagesLogo(name) {
+      return require(`../assets/filter-logo/${name}.png`);
+    },
+  },
+
+  computed: {
+    filtered() {
+      if (this.filter) {
+        return this.designData.filter(
+          (design) => design.software === this.filter
+        );
+      } else {
+        return this.designData.filter((design) =>
+          design.title.toLowerCase().includes(this.searchText.toLowerCase())
+        );
+      }
+    },
+  },
+};
+</script>
 
 <style scoped lang="scss">
 .container {
   display: flex;
   justify-content: space-between;
+  // flex-wrap: wrap;
   align-items: center;
   padding: 0 5rem;
   font-size: 1.6rem;
-
   .selector {
-    // background-color: gray;
     padding: 1rem;
     border: 1px solid #efefff;
     border-radius: 7rem;
@@ -64,18 +115,16 @@
   .filter-btns {
     .filter-btn {
       background-color: transparent;
-      border: none;
       padding: 1rem;
       color: #202142;
       font-weight: 500;
       margin-right: 1rem;
-      cursor: pointer;
       border-radius: 3.2rem;
       border: 1px solid #efefff;
 
       &:hover {
-        color: #424369;
         transition: all 500ms;
+        color: #424369;
         border: 1px solid #424369;
       }
     }
@@ -85,7 +134,8 @@
     justify-content: center;
     align-items: center;
     gap: 1rem;
-    .software-item {
+
+    &--item {
       height: 5.2rem;
       width: 5.2rem;
       display: inline-flex;
@@ -94,13 +144,12 @@
       flex-direction: row;
       background-color: transparent;
       border: 1px solid #efefff;
-      // margin-right: 1rem;
       border-radius: 7rem;
       padding: 1rem;
-      cursor: pointer;
 
       &:hover {
         border: 1px solid orange;
+        transition: border 500ms;
       }
     }
   }
